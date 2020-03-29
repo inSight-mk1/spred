@@ -1,0 +1,69 @@
+1.
+param:     def __init__(self, new_high1=10, new_high2=20, ma1=20, ma2=60,
+                 week_ma1=24, week_ma2=48,  # Not used for now
+                 avg_amount_period=10, large_amount_ratio=2.0,
+                 ma_ratio=0.1,
+                 t_before=0, max_hold_t=60,
+                 sell_below_ma=10, loss_stop_pct=0.1):
+('good_rate', 0.1346153846153846)
+('win_rate', 0.4807692307692308)
+('ap', 0.057592783988179422)
+
+2. sell_below_ma=5 : very bad result ???
+
+3. sell_below_ma=5 : very good result at bull
+('good_rate', 0.40384615384615385)
+('win_rate', 0.6730769230769231)
+('ap', 0.12452098966967812)
+
+4. expand to t=240, covering bull and bear market, pb_t=240
+good at bull, no select or bad select at bear
+
+5. different sell tactics 5, 10, 20
+still low
+
+6. t-720 to t-240 start from 201807 back to
+very bad result
+('good_rate', 0.016069221260815822)
+('win_rate', 0.173053152039555)
+('ap', -0.030897823237953231)
+
+7. as 6, sell when profit>0
+('good_rate', 0.028400597907324365)
+('win_rate', 0.3482810164424514)
+('ap', -0.0046945218788942101)
+
+8.     def __init__(self, new_high1=10, new_high2=20, ma1=21, ma2=60,
+                 week_ma1=24, week_ma2=48,
+                 avg_amount_period=10, large_amount_ratio=2.0,
+                 ma_ratio=0.1,
+                 t_before=0, max_hold_t=60,
+                 sell_below_ma=13, loss_stop_pct=0.1,
+                 play_back_mode=False):
+amount > last_amount * ratio
+('good_rate', 0.037900874635568516)
+('win_rate', 0.3177842565597668)
+('ap', 0.003051844042516693)
+
+9. as 8, sell after profit>0:
+('good_rate', 0.011661807580174927)
+('win_rate', 0.46647230320699706)
+('ap', 0.0064299688656219781)
+
+10. as 8, sell_below_ma=5
+('good_rate', 0.017804154302670624)
+('win_rate', 0.34124629080118696)
+('ap', 0.0021976980426331619)
+
+11.     def __init__(self, new_high1=10, new_high2=34, ma1=21, ma2=55,
+                 week_ma1=24, week_ma2=48,
+                 avg_amount_period=10, large_amount_ratio=2.0,
+                 ma_ratio=0.1,
+                 t_before=0, max_hold_t=60,
+                 sell_below_ma=5, loss_stop_pct=0.1,
+                 play_back_mode=False):
+as 10, set new_high2=34
+('good_rate', 0.02403846153846154)
+('win_rate', 0.3269230769230769)
+('ap', 0.00071376702419812346)
+why worse?

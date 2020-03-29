@@ -1,0 +1,19 @@
+# Daniel tactics's params
+new_high1 = 50
+close_high_ratio = 0.01  # 0.012 if need more selected items, 0.01 if need better win rate
+ma1 = 20
+ma2 = 60
+week_ma1 = 24
+week_ma2 = 48
+avg_amount_period = 10
+large_amount_ratio = 1.7
+ma_ratio = 0.12
+wma_ratio = 0.2
+t_before = 0
+max_hold_t = 20
+sell_below_ma = 8
+loss_stop_pct = 0.1
+up_ratio_low = 5.00
+up_ratio_high = 11.00
+half_sell_flag = False
+half_sell_ratio =  0.03
