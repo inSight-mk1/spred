@@ -132,3 +132,4 @@ dmypy.json
 config/config_private.py
 .idea/
 *.pyc
+all_list.txt

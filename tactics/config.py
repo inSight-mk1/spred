@@ -1,6 +1,6 @@
 
 data_path = "all_list.txt"
-nthreads = 15
+nthreads = 12
 multi_thread = True
 max_hold_t = 20
 

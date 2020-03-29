@@ -68,6 +68,7 @@ class XXNBTactics(object):
                         if df_need[j][2] <= t1_high:
                             nogap = True
                             break
+                    # Check if publish fin-report
 
             if (nogap):
                 continue
