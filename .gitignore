@@ -133,3 +133,4 @@ config/config_private.py
 .idea/
 *.pyc
 all_list.txt
+rps.txt

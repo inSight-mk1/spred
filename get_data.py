@@ -6,17 +6,13 @@ import time
 
 from config import config_private as cfgp
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 my_token = cfgp.my_token
 ts.set_token(my_token)
 
 save_path = cfgp.save_path
 
 start_date = '20100101'
-end_date = '20200327'
+end_date = '20200525'
 min_len = 850
 
 max_every_min = 200.0
@@ -66,6 +62,6 @@ for ts_code in all_array:
         continue
 
     if i % 10 == 0:
-        print("Num: %d, time: %.3f, sleep_cnt: %d") % (i, total_time, sleep_cnt)
+        print("Num: %d, time: %.3f, sleep_cnt: %d" % (i, total_time, sleep_cnt))
         total_time = 0.0
         sleep_cnt = 0

@@ -4,14 +4,12 @@ import tushare as ts
 import numpy as np
 import pandas as pd
 import os
-import time, datetime
+import time
+import datetime
 from datetime import datetime as datet
 
 from config import config_private as cfgp
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 class Fin_Report_Acquirer(object):
     def __init__(self, ts_code, date):
