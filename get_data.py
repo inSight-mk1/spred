@@ -13,7 +13,7 @@ save_path = cfgp.save_path
 
 start_date = '20100101'
 end_date = '20200526'
-min_len = 850
+min_len = 250
 
 max_every_min = 200.0
 each_query_time = 60.0 / max_every_min
