@@ -17,4 +17,4 @@ class ListedTimePool(StockPool):
 
 if __name__ == '__main__':
     pool = ListedTimePool()
-    print(len(pool.pool))
+    print(pool.pool[-1])
