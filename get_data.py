@@ -12,7 +12,7 @@ ts.set_token(my_token)
 save_path = cfgp.save_path
 
 start_date = '20100101'
-end_date = '20200527'
+end_date = '20200528'
 min_len = 500
 
 max_every_min = 200.0
