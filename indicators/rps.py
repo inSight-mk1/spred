@@ -45,6 +45,7 @@ if __name__ == '__main__':
     rps_calculator = RPS(250, 30, pool)
     rps_array = rps_calculator.rps_array
     print(rps_array.shape)
+    print(rps_array[0])
     # price_ratio_array = rps_calculator.price_ratio_array
     # rps_result_list = []
     # for i, stock in enumerate(pool):

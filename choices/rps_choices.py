@@ -50,6 +50,3 @@ if __name__ == '__main__':
                 print(df_need[0], choices.selected_rps_list[i])
         except KeyError:
             print(stock)
-
-
-
