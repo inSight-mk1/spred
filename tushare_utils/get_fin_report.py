@@ -11,7 +11,7 @@ from datetime import datetime as datet
 from config import config_private as cfgp
 
 
-class Fin_Report_Acquirer(object):
+class FinReportAcquirer(object):
     def __init__(self, ts_code, date):
         self.ts_code = ts_code
         self.date = date
@@ -52,6 +52,6 @@ class Fin_Report_Acquirer(object):
 
 
 if __name__ == '__main__':
-    fra = Fin_Report_Acquirer(ts_code='000661.SZ', date='20200327')
+    fra = FinReportAcquirer(ts_code='000661.SZ', date='20200327')
     print(fra.adjust_date())
     print(fra.acquire_fin_report_status())
