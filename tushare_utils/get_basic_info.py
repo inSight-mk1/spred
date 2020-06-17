@@ -28,25 +28,24 @@ class BasicInfoAcquirer(object):
     def acquire_basic_info(self):
         self.init_ts()
         # read info to dataframe
-        # df = self.ts_api.forecast(ts_code=self.ts_code, ann_date=self.date)
-
+        df = self.ts_api.daily_basic(ts_code=self.ts_code, trade_date=self.date,
+                                     fields='total_mv')
         # get info we need
-        # ...
-
-        # save them to class member
-        # ...
+        self.total_mv = df['total_mv'][0]
 
     # Return true if good
     def mv_judge(self, min_thresh=3000000, max_thresh=999999999):
         # judge whether a stock is good by market value
-        # ...
-        self.mv
-        return True
+        if min_thresh <= self.total_mv <= max_thresh:
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':
     # Test
-    # fra = Fin_Report_Acquirer(ts_code='000661.SZ', date='20200327')
-    # print(fra.adjust_date())
-    # print(fra.acquire_fin_report_status())
+    bia = BasicInfoAcquirer(ts_code='300767.SZ', date='20200617')
+    bia.acquire_basic_info()
+    print(bia.total_mv)
+    print(bia.mv_judge())
     pass

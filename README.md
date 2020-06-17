@@ -2,7 +2,7 @@
 a mini framework of stock trade tactics, using TuShare.
 
 ## TODO
-- [ ] get stock basic info, e.g. turnover_rate, pe, mv ...
+- [x] get stock basic info, e.g. turnover_rate, pe, mv ...
 - [ ] get hk hold info
 - [ ] basic info choices
 - [ ] multi choices, pool and function
