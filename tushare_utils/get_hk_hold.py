@@ -1,15 +1,16 @@
 # encoding=utf8
 
+import os
 import tushare as ts
 import pandas as pd
 from config import config_private as cfgp
 
 
 class HkHoldAcquirer(object):
-    def __init__(self, ts_code, date):
+    def __init__(self, ts_code):
         self.ts_code = ts_code
-        self.date = date
         self.ts_api = None
+        self.hk_data_path = os.path.join(cfgp.save_path, 'hk_hold_info.csv')
 
         # hk_hold info need to use as below
         self.hk_hold_ratio = None
@@ -22,12 +23,15 @@ class HkHoldAcquirer(object):
     def acquire_hk_hold(self):
         self.init_ts()
         # read info to dataframe
-        df = self.ts_api.hk_hold(ts_code=self.ts_code, trade_date=self.date)
+        df = pd.read_csv(self.hk_data_path)
+        df_need = df[df['ts_code'].isin([self.ts_code])]
+        dict_need = df_need.to_dict(orient='ratio')
+        # print(dict_need)
         # get info we need
-        if df.empty:
+        if len(dict_need) == 0:
             self.hk_hold_ratio = 0.0
         else:
-            self.hk_hold_ratio = df['ratio'][0]
+            self.hk_hold_ratio = dict_need[0]['ratio']
 
     # Return true if good
     def hk_hold_judge(self, min_thresh=2.97):
@@ -40,7 +44,7 @@ class HkHoldAcquirer(object):
 
 if __name__ == '__main__':
     # Test
-    hha = HkHoldAcquirer(ts_code='300059.SZ', date='20200617')
+    hha = HkHoldAcquirer(ts_code='300767.SZ')
     hha.acquire_hk_hold()
     print(hha.hk_hold_ratio)
     print(hha.hk_hold_judge())
