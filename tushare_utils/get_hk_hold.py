@@ -30,7 +30,7 @@ class HkHoldAcquirer(object):
             self.hk_hold_ratio = df['ratio'][0]
 
     # Return true if good
-    def mv_judge(self, min_thresh=2.97):
+    def hk_hold_judge(self, min_thresh=2.97):
         # judge whether a stock is good by market value
         if min_thresh <= self.hk_hold_ratio:
             return True
@@ -43,4 +43,4 @@ if __name__ == '__main__':
     hha = HkHoldAcquirer(ts_code='300059.SZ', date='20200617')
     hha.acquire_hk_hold()
     print(hha.hk_hold_ratio)
-    print(hha.mv_judge())
+    print(hha.hk_hold_judge())
