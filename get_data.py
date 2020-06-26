@@ -69,8 +69,8 @@ if __name__ == '__main__':
     save_path = cfgp.save_path
 
     start_date = '20180101'
-    end_date = '20200619'
-    hk_data_date = '20200618'
+    end_date = '20200624'
+    hk_data_date = '20200623'
 
     min_len = 500
 

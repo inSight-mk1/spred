@@ -22,7 +22,7 @@ class RPSChoices(object):
 
     def select(self):
         rps_max = np.max(self.indicators.rps_array, axis=1)
-        print(rps_max.shape)
+        # print(rps_max.shape)
         latest_rps_array = self.indicators.rps_array[:, 0]
         rps_max_choices = rps_max == latest_rps_array
         rps_value_choices = latest_rps_array >= self.thresh_min

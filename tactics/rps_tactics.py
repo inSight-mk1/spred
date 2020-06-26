@@ -19,7 +19,7 @@ class RPSTactics(object):
                     df_need = np.array(stock[['ts_code', 'trade_date']])
                     ts_code = str(df_need[0][0])
                     trade_date = str(df_need[0][1])
-                    hk_hold_date = str(df_need[1][1])
+                    # hk_hold_date = str(df_need[1][1])
                     bia = BasicInfoAcquirer(ts_code, trade_date)
                     bia.acquire_basic_info()
                     if not bia.mv_judge():
@@ -33,6 +33,7 @@ class RPSTactics(object):
                     stock_name = sna.name
                     print(ts_code, stock_name, trade_date, choices.selected_rps_list[i])
             except KeyError:
+                print('KeyError')
                 print(stock)
 
 
