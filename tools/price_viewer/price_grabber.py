@@ -23,4 +23,4 @@ class Price_Grabber(object):
 
 if __name__ == '__main__':
     pg = Price_Grabber()
-    print(pg.grab('sh601006'))
+    print(pg.grab('sz300059'))
