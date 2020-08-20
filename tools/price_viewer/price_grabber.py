@@ -16,9 +16,16 @@ class Price_Grabber(object):
         s_texts = info_text.split(',')
         last_day_price_f = float(s_texts[2])
         current_price_f = float(s_texts[3])
+        price_s = '%.2f' % current_price_f
         ratio = (current_price_f - last_day_price_f) / last_day_price_f * 100
         ratio_s = '%.2f%%' % ratio
-        return dict(stock_name=s_texts[0], ratio=ratio_s, current_price=s_texts[3], current_date=s_texts[30], current_time=s_texts[31])
+        today_high_ratio = (float(s_texts[4]) - last_day_price_f) / last_day_price_f * 100
+        high_ratio_s = '%.2f%%' % today_high_ratio
+        today_low_ratio = (float(s_texts[5]) - last_day_price_f) / last_day_price_f * 100
+        low_ratio_s = '%.2f%%' % today_low_ratio
+        return dict(stock_name=s_texts[0], ratio=ratio_s, current_price=price_s,
+                    today_high=high_ratio_s, today_low=low_ratio_s,
+                    current_date=s_texts[30], current_time=s_texts[31])
 
 
 if __name__ == '__main__':
