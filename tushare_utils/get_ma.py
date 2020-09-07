@@ -5,13 +5,14 @@ from config import config_private as config
 
 
 class MAAcquirer(object):
-    def __init__(self, ts_code, ma=10):
+    def __init__(self, ts_code, ma=10, t=0):
         self.ts_code = ts_code
         self.ma = ma
         self.stock_data_path = os.path.join(config.save_path, ts_code + '.csv')
         self.df = pd.read_csv(self.stock_data_path)
         self.price_ma = None
         self.current_price = None
+        self.t = t
 
     def acquire_ma(self, ma=None):
         # 0:open, 1:high, 2:low, 3:close, 4:amount
@@ -19,8 +20,8 @@ class MAAcquirer(object):
                                     'trade_date', 'pct_chg']])
         if ma is not None:
             self.ma = ma
-        self.price_ma = np.mean(df_need[0:self.ma, 3])
-        self.current_price = df_need[0, 3]
+        self.price_ma = np.mean(df_need[self.t:self.t + self.ma, 3])
+        self.current_price = df_need[self.t, 3]
         return self.price_ma
 
 

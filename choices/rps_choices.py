@@ -4,13 +4,15 @@ import numpy as np
 
 
 class RPSChoices(object):
-    def __init__(self, rps_n=50, thresh_min=87.0, thresh_max=92.0, new_high_t=20):
+    def __init__(self, reused_pool=None, rps_n=50, thresh_min=87.0, thresh_max=92.0, new_high_t=20, t=0):
+        self.reused_pool = reused_pool
+
         self.thresh_min = thresh_min
         self.thresh_max = thresh_max
 
         # 1. get stock pool
         print('Loading pool')
-        self.stock_pool = ListedTimePool().pool
+        self.stock_pool = ListedTimePool(reused_pool=self.reused_pool, t=t).pool
 
         # 2. define indicators
         print('Calculating rps')
