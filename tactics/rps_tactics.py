@@ -4,8 +4,50 @@ from tushare_utils.get_hk_hold import HkHoldAcquirer
 from tushare_utils.get_stock_name import StockNameAcquirer
 from tushare_utils.get_ma import MAAcquirer
 from base.pool.stock_pool import StockPool
+import config.config_thread as config_thread
 
 import numpy as np
+import math
+from multiprocessing import Pool
+
+# import objgraph
+
+def chunks(arr, m):
+    n = int(math.ceil(len(arr) / float(m)))
+    return [arr[i:i + n] for i in range(0, len(arr), n)]
+
+
+def select_part(params):
+    selected_pool = params['selected_pool']
+    selected_rps_list = params['selected_rps_list']
+    selected_list = []
+    for i, stock in enumerate(selected_pool):
+        try:
+            if selected_rps_list[i] < 93:
+                df_need = np.array(stock[['ts_code', 'trade_date']])
+                ts_code = str(df_need[0][0])
+                trade_date = str(df_need[0][1])
+                # hk_hold_date = str(df_need[1][1])
+                # bia = BasicInfoAcquirer(ts_code, trade_date)
+                # bia.acquire_basic_info()
+                # if not bia.mv_judge():
+                #     continue
+
+                # hha = HkHoldAcquirer(ts_code, hk_hold_date)
+                # hha.acquire_hk_hold()
+                # if not hha.hk_hold_judge():
+                #     continue
+
+                # sna = StockNameAcquirer(ts_code)
+                # sna.acquire_stock_name()
+                # stock_name = sna.name
+                # print(ts_code, stock_name, trade_date, choices.selected_rps_list[i])
+
+                selected_list.append(dict(ts_code=ts_code, rps=selected_rps_list[i], trade_date=trade_date))
+        except KeyError:
+            print('KeyError')
+            print(stock)
+    return selected_list
 
 
 class RPSTactics(object):
@@ -21,6 +63,23 @@ class RPSTactics(object):
     def select(self, select_cnt):
         choices = RPSChoices(reused_pool=reused_pool, t=self.t)
         selected_list = []
+
+        # nthreads = config_thread.rps_sel_nthreads
+        # params = []
+        # selected_pool_part = chunks(choices.selected_pool, nthreads)
+        # selected_rps_list_part = chunks(choices.selected_rps_list, nthreads)
+        # nthreads = len(selected_pool_part)
+        # print('Actual num of threads', nthreads)
+        # for i in range(nthreads):
+        #     param_d = dict(selected_pool=selected_pool_part[i],
+        #                    selected_rps_list=selected_rps_list_part[i])
+        #     params.append(param_d)
+        # pool = Pool(nthreads)
+        # results = pool.map(select_part, params)
+        # for res in results:
+        #     selected_list.extend(res)
+        # pool.close()
+
         for i, stock in enumerate(choices.selected_pool):
             try:
                 if choices.selected_rps_list[i] < 93:
@@ -28,17 +87,17 @@ class RPSTactics(object):
                     ts_code = str(df_need[0][0])
                     trade_date = str(df_need[0][1])
                     # hk_hold_date = str(df_need[1][1])
-                    bia = BasicInfoAcquirer(ts_code, trade_date)
-                    bia.acquire_basic_info()
-                    if not bia.mv_judge():
-                        continue
+                    # bia = BasicInfoAcquirer(ts_code, trade_date)
+                    # bia.acquire_basic_info()
+                    # if not bia.mv_judge():
+                    #     continue
                     # hha = HkHoldAcquirer(ts_code, hk_hold_date)
                     # hha.acquire_hk_hold()
                     # if not hha.hk_hold_judge():
                     #     continue
-                    sna = StockNameAcquirer(ts_code)
-                    sna.acquire_stock_name()
-                    stock_name = sna.name
+                    # sna = StockNameAcquirer(ts_code)
+                    # sna.acquire_stock_name()
+                    # stock_name = sna.name
                     # print(ts_code, stock_name, trade_date, choices.selected_rps_list[i])
                     selected_list.append(dict(ts_code=ts_code, rps=choices.selected_rps_list[i], trade_date=trade_date))
             except KeyError:
@@ -91,3 +150,4 @@ if __name__ == '__main__':
         tactics = RPSTactics(reused_pool=reused_pool, t=t)
         tactics.hold_list = hold_list
         hold_list = tactics.update()
+        # objgraph.show_growth()
