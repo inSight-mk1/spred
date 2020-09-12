@@ -1,69 +1,26 @@
-from tactics.daniel_tactics import DanielTactics
-from tactics.uplimit_tactics import UplimitTactics
-from multiprocessing import Pool
-from tactics import config, config_dt
-
-
-def part_pb(t_range):
-    # print(t_range)
-    win_cnt = 0
-    all_cnt = 0
-    bad_cnt = 0
-    good_profit_cnt = 0
-    total_profit = 0.0
-    total_wr = 0.0
-    total_gr = 0.0
-    total_br = 0.0
-    trade_t_cnt = 0
-    for i in t_range:
-        print(i)
-        dt = None
-        if config.playback_tactics == config.Daniel_tactics:
-            dt = DanielTactics(t_before=i, play_back_mode=True)
-        if config.playback_tactics == config.Uplimit_tactics:
-            dt = UplimitTactics(t_before=i, play_back_mode=True)
-        if dt is None:
-            print("Platback_tactics is an unrecognized value. Please checkout config.py!")
-        dt.select()
-        res = dt.sell_point()
-        t_win_cnt = 0
-        t_bad_cnt = 0
-        t_good_cnt = 0
-        for r in res:
-            if r >= 0.005:
-                t_win_cnt += 1
-                win_cnt += 1
-                if r >= 0.10:
-                    t_good_cnt += 1
-                    good_profit_cnt += 1
-            if r <= -0.07:
-                t_bad_cnt += 1
-                bad_cnt += 1
-            all_cnt += 1
-            total_profit += r
-        sscnt = len(res)
-        if sscnt > 0:
-            single_wr = 1.0 * t_win_cnt / sscnt
-            single_gr = 1.0 * t_good_cnt / sscnt
-            single_br = 1.0 * t_bad_cnt / sscnt
-            total_wr += single_wr
-            total_gr += single_gr
-            total_br += single_br
-            trade_t_cnt += 1
-            print("single_win_rate", single_wr)
-    return win_cnt, all_cnt, good_profit_cnt, total_profit, bad_cnt, total_wr, total_gr, total_br, trade_t_cnt
-
+from tactics.rps_tactics import RPSTactics
+from base.pool.stock_pool import StockPool
 
 class PlayBack(object):
-    def __init__(self, pb_t=240, max_hold_t=config_dt.max_hold_t,
-                 pb_t_start_from_now=None,
-                 pb_t_end_from_now=None):
+    def __init__(self, pb_t=60):
         self.pb_t = pb_t
-        self.max_hold_t = max_hold_t
-        self.pb_t_start_from_now = pb_t_start_from_now
-        self.pb_t_end_from_now = pb_t_end_from_now
 
     def playback(self):
+        reused_pool = StockPool()
+        playback_t = self.pb_t
+        hold_list = []
+        for t in range(playback_t, -1, -1):
+            print(t)
+            tactics = RPSTactics(reused_pool=reused_pool, t=t, rps_n=50, new_high_t=20, hold_cnt=8, sold_ma=20)
+            tactics.hold_list = hold_list
+            tactics.sold()
+            current_hold_cnt = len(tactics.hold_list)
+            target_hold_cnt = tactics.hold_cnt
+            buy_cnt = target_hold_cnt - current_hold_cnt
+            selected_list = tactics.select(select_cnt=buy_cnt)
+            tactics.buy(selected_list)
+            print tactics.hold_list
+
 
         pb_t_end = self.pb_t_end_from_now
         pb_t_start = self.pb_t_start_from_now

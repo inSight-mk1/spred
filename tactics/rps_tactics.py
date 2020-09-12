@@ -63,6 +63,8 @@ class RPSTactics(object):
     def select(self, select_cnt):
         choices = RPSChoices(reused_pool=reused_pool, t=self.t)
         selected_list = []
+        if select_cnt == 0:
+            return selected_list
 
         # nthreads = config_thread.rps_sel_nthreads
         # params = []
@@ -83,9 +85,11 @@ class RPSTactics(object):
         for i, stock in enumerate(choices.selected_pool):
             try:
                 if choices.selected_rps_list[i] < 93:
-                    df_need = np.array(stock[['ts_code', 'trade_date']])
+                    # print(stock)
+                    df_need = np.array(stock[['ts_code', 'trade_date', 'close']])
                     ts_code = str(df_need[0][0])
                     trade_date = str(df_need[0][1])
+                    selected_price = str(df_need[0][2])
                     # hk_hold_date = str(df_need[1][1])
                     # bia = BasicInfoAcquirer(ts_code, trade_date)
                     # bia.acquire_basic_info()
@@ -99,7 +103,8 @@ class RPSTactics(object):
                     # sna.acquire_stock_name()
                     # stock_name = sna.name
                     # print(ts_code, stock_name, trade_date, choices.selected_rps_list[i])
-                    selected_list.append(dict(ts_code=ts_code, rps=choices.selected_rps_list[i], trade_date=trade_date))
+                    selected_list.append(dict(ts_code=ts_code, rps=choices.selected_rps_list[i], trade_date=trade_date,
+                                              selected_price=selected_price))
             except KeyError:
                 print('KeyError')
                 print(stock)
@@ -115,6 +120,8 @@ class RPSTactics(object):
     def sold(self):
         print('sold: ')
         sold_indices = []
+        sold_prices = []
+        ratios = []
         for i, stock in enumerate(self.hold_list):
             ts_code = stock['ts_code']
             stock_maa = MAAcquirer(ts_code=ts_code, ma=self.sold_ma, t=self.t)
@@ -122,14 +129,23 @@ class RPSTactics(object):
             # print(ts_code, stock_maa.price_ma)
             if stock_maa.current_price < stock_maa.price_ma:
                 sold_indices.append(i)
+                sold_prices.append(stock_maa.current_price)
         old_hold_list = self.hold_list
         self.hold_list = []
+        j = 0
         for i, stock in enumerate(old_hold_list):
             if i not in sold_indices:
                 self.hold_list.append(stock)
             else:
-                print(stock)
+                # TODO: Use T+1 open/close price as buy_price
+                buy_price = float(stock['selected_price'])
+                sold_price = sold_prices[j]
+                ratio = (sold_price - buy_price) / buy_price
+                ratios.append(ratio)
+                print(stock, sold_price, ratio)
+                j += 1
         print('End of sold')
+        return ratios
 
     def update(self):
         self.sold()
@@ -147,7 +163,7 @@ if __name__ == '__main__':
     hold_list = []
     for t in range(playback_t, -1, -1):
         print(t)
-        tactics = RPSTactics(reused_pool=reused_pool, t=t)
+        tactics = RPSTactics(reused_pool=reused_pool, t=t, sold_ma=20)
         tactics.hold_list = hold_list
         hold_list = tactics.update()
         # objgraph.show_growth()
