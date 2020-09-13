@@ -12,6 +12,7 @@ from multiprocessing import Pool
 
 # import objgraph
 
+
 def chunks(arr, m):
     n = int(math.ceil(len(arr) / float(m)))
     return [arr[i:i + n] for i in range(0, len(arr), n)]
@@ -51,20 +52,25 @@ def select_part(params):
 
 
 class RPSTactics(object):
-    def __init__(self, reused_pool=None, rps_n=50, new_high_t=20, hold_cnt=8, sold_ma=10, t=0):
+    def __init__(self, reused_pool, rps_n=50, thresh_min=87.0, thresh_max=92.0, new_high_t=20, hold_cnt=8, sold_ma=10,
+                 t=0, hold_value=1.0):
         self.reused_pool = reused_pool
         self.rps_n = rps_n
+        self.thresh_min = thresh_min
+        self.thresh_max = thresh_max
         self.new_high_t = new_high_t
         self.hold_cnt = hold_cnt
         self.hold_list = []
         self.sold_ma = sold_ma
         self.t = t
+        self.hold_value = hold_value
 
     def select(self, select_cnt):
-        choices = RPSChoices(reused_pool=reused_pool, t=self.t)
         selected_list = []
         if select_cnt == 0:
             return selected_list
+        choices = RPSChoices(reused_pool=self.reused_pool, t=self.t, rps_n=self.rps_n,
+                             thresh_max=self.thresh_max, thresh_min=self.thresh_min)
 
         # nthreads = config_thread.rps_sel_nthreads
         # params = []
@@ -86,10 +92,12 @@ class RPSTactics(object):
             try:
                 if choices.selected_rps_list[i] < 93:
                     # print(stock)
-                    df_need = np.array(stock[['ts_code', 'trade_date', 'close']])
+                    df_need = np.array(stock[['ts_code', 'trade_date', 'close', 'idx', 'time_idx']])
                     ts_code = str(df_need[0][0])
                     trade_date = str(df_need[0][1])
                     selected_price = str(df_need[0][2])
+                    stock_idx = df_need[0][3]
+                    time_idx = df_need[0][4]
                     # hk_hold_date = str(df_need[1][1])
                     # bia = BasicInfoAcquirer(ts_code, trade_date)
                     # bia.acquire_basic_info()
@@ -104,7 +112,8 @@ class RPSTactics(object):
                     # stock_name = sna.name
                     # print(ts_code, stock_name, trade_date, choices.selected_rps_list[i])
                     selected_list.append(dict(ts_code=ts_code, rps=choices.selected_rps_list[i], trade_date=trade_date,
-                                              selected_price=selected_price))
+                                              selected_price=selected_price, stock_idx=stock_idx, time_idx=time_idx,
+                                              hold_value=self.hold_value))
             except KeyError:
                 print('KeyError')
                 print(stock)
@@ -132,20 +141,25 @@ class RPSTactics(object):
                 sold_prices.append(stock_maa.current_price)
         old_hold_list = self.hold_list
         self.hold_list = []
+        sold_list = []
         j = 0
         for i, stock in enumerate(old_hold_list):
             if i not in sold_indices:
                 self.hold_list.append(stock)
             else:
                 # TODO: Use T+1 open/close price as buy_price
-                buy_price = float(stock['selected_price'])
+                sold_list.append(old_hold_list[i])
+                stock_idx = stock['stock_idx']
+                time_idx = stock['time_idx']
+                # Get T+1 open/close price
+                buy_price = self.reused_pool.get_price(stock_idx, time_idx - 1)
                 sold_price = sold_prices[j]
                 ratio = (sold_price - buy_price) / buy_price
                 ratios.append(ratio)
-                print(stock, sold_price, ratio)
+                print(stock, buy_price, sold_price, ratio)
                 j += 1
         print('End of sold')
-        return ratios
+        return sold_list, ratios
 
     def update(self):
         self.sold()
