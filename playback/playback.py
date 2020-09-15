@@ -20,7 +20,7 @@ class PlayBack(object):
         for t in range(playback_t, -1, -1):
             print(t)
             tactics = RPSTactics(reused_pool=reused_pool, t=t, rps_n=250, thresh_min=90, thresh_max=93,
-                                 new_high_t=20, hold_cnt=hold_cnt, sold_ma=20, hold_value=init_hold_value)
+                                 new_high_t=20, hold_cnt=hold_cnt, sold_ma=10, hold_value=init_hold_value)
             tactics.hold_list = hold_list
             sold_list, profits = tactics.sold()
             for profit in profits:
@@ -29,6 +29,19 @@ class PlayBack(object):
                 total_profit += profit
             total_cnt += len(profits)
             current_hold_cnt = len(tactics.hold_list)
+
+            total_value = 0
+            for stock in sold_list:
+                stock_idx = stock['stock_idx']
+                time_idx = t
+                pct_chg = reused_pool.get_price(stock_idx, time_idx, 'pct_chg')
+                ratio = 1 + pct_chg * 0.01
+                returned_value = stock['hold_value'] * ratio
+                total_value += returned_value
+            if len(sold_list) > 0:
+                init_hold_value = total_value / len(sold_list)
+                tactics.hold_value = init_hold_value
+
             target_hold_cnt = tactics.hold_cnt
             buy_cnt = target_hold_cnt - current_hold_cnt
             selected_list = tactics.select(select_cnt=buy_cnt)
@@ -43,20 +56,8 @@ class PlayBack(object):
                 print('win_rate =', win_cnt / total_cnt)
                 print('average_profit =', total_profit / total_cnt)
 
-            total_value = 0
-            for stock in sold_list:
-                stock_idx = stock['stock_idx']
-                time_idx = t
-                pct_chg = reused_pool.get_price(stock_idx, time_idx, 'pct_chg')
-                ratio = 1 + pct_chg * 0.01
-                returned_value = stock['hold_value'] * ratio
-                total_value += returned_value
-            if len(sold_list) > 0:
-                # TODO: Set hold_value before selecting
-                init_hold_value = total_value / len(sold_list)
-
             print('Calculating realtime value')
-            print(last_selected)
+            # print(last_selected)
             for i, stock in enumerate(hold_list):
                 if stock in selected_list:
                     continue
