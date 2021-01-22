@@ -68,11 +68,11 @@ if __name__ == '__main__':
 
     save_path = cfgp.save_path
 
-    start_date = '20180101'
-    end_date = '20200624'
-    hk_data_date = '20200623'
+    start_date = '20201201'
+    end_date = '20210121'
+    hk_data_date = '20210120'
 
-    min_len = 500
+    min_len = 20
 
     max_every_min = 500
     each_query_time = 60.0 / max_every_min
