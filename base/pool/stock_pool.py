@@ -16,8 +16,8 @@ def load_data(path):
         print('There are {} pieces of data in txt file'.format((len(paths))))
 
     stocks_data = []
-    for path in paths:
-        df = pd.read_csv(path)
+    for data_path in paths:
+        df = pd.read_csv(data_path)
         stocks_data.append(df)
 
     return stocks_data

@@ -5,20 +5,27 @@ import os
 import time
 
 from config import config_private as cfgp
+from tools.read_forks_pool import read_forks_pool
 
 
-def get_price_data(pro, start_date, end_date, save_path, min_len, each_query_time):
+def get_price_data(pro, start_date, end_date, save_path, min_len, each_query_time, stock_list=None):
     # No qfq
     # df = pro.daily(ts_code='600116.SH',
     #                start_date='20160701',
     #                end_date='20190614')
-    all_stock = pro.stock_basic(exchange='',
-                                list_status='L',
-                                fields='ts_code')
-
-    all_array = all_stock['ts_code']
-
-    print(all_array)
+    if stock_list is None:
+        all_stock = pro.stock_basic(exchange='',
+                                    list_status='L',
+                                    fields='ts_code')
+        all_array = all_stock['ts_code']
+        print(all_array)
+    else:
+        all_array = []
+        for code in stock_list:
+            if code[0] == '6':
+                all_array.append(code + '.SH')
+            else:
+                all_array.append(code + '.SZ')
 
     i = 0
 
@@ -68,16 +75,19 @@ if __name__ == '__main__':
 
     save_path = cfgp.save_path
 
-    start_date = '20180101'
-    end_date = '20200624'
+    xlsx_path = './forks_0526.xlsx'
+    stock_list = read_forks_pool(xlsx_path)
+
+    start_date = '20220401'
+    end_date = '20220624'
     hk_data_date = '20200623'
 
-    min_len = 500
+    min_len = 0
 
     max_every_min = 500
     each_query_time = 60.0 / max_every_min
 
     pro = ts.pro_api()
 
-    get_hk_hold_data(pro, hk_data_date)
-    get_price_data(pro, start_date, end_date, save_path, min_len, each_query_time)
+    # get_hk_hold_data(pro, hk_data_date)
+    get_price_data(pro, start_date, end_date, save_path, min_len, each_query_time, stock_list)
