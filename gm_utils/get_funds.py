@@ -7,7 +7,49 @@ from gm.api import *
 # 设置token， 查看已有token ID,在用户-秘钥管理里获取
 set_token('479feb80f2d2bd55461465e2cfac0be64eba0e98')
 
+
+# funds data transfer limit: 300/5min
+def get_ratios(sym, date):
+    history_data = history_n(symbol=sym, frequency='1d', count=2, end_time=date,
+                             fields='open, close, low, high, eob', adjust=ADJUST_NONE, df=False)
+    ratio_str = ''
+    if len(history_data):
+        last_d_ratio = (history_data[1]['close'] / history_data[0]['close'] - 1) * 100
+        ratio_str = '%.1f%%' % last_d_ratio
+
+    return ratio_str
+
+
+def get_multi_funds(syms, date):
+    # Some symbols are empty or null
+    filtered_symbols = []
+    valid_indices = []
+    for i, sym in enumerate(syms):
+        if len(sym) and sym[0] == 'S':
+            filtered_symbols.append(sym)
+            valid_indices.append(i)
+    funds_dict = stk_get_daily_mktvalue_pt(syms, 'tot_mv', trade_date=date, df=False)
+
+
 def get_funds(sym, date):
+    fundamental = stk_get_daily_mktvalue(sym, fields='tot_mv', start_date=date, end_date=date, df=False)
+    history_data = history_n(symbol=sym, frequency='1d', count=2, end_time=date,
+                             fields='open, close, low, high, eob', adjust=ADJUST_NONE, df=False)
+
+    fund_str = ''
+    if len(fundamental):
+        yiyuan = fundamental[0]['tot_mv'] / 100000000
+        fund_str = "%.0f" % yiyuan
+
+    ratio_str = ''
+    if len(history_data):
+        last_d_ratio = (history_data[1]['close'] / history_data[0]['close'] - 1) * 100
+        ratio_str = '%.1f%%' % last_d_ratio
+
+    return fund_str, ratio_str
+
+
+def get_funds_prt(sym, date):
     if sym[0] == '6':
         full_sym = 'SHSE.' + sym
     else:
@@ -36,15 +78,17 @@ def get_funds(sym, date):
 
     print('')
 
-date = "2024-02-19"
-# date = None
 
-while True:
-    sym = input('symbol: ')
-    if len(sym):
-        get_funds(sym, date)
-    else:
-        break
+if __name__ == '__main__':
+    date = "2024-02-19"
+    # date = None
 
-print('End')
+    while True:
+        sym = input('symbol: ')
+        if len(sym):
+            get_funds_prt(sym, date)
+        else:
+            break
+
+    print('End')
 
