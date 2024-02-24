@@ -9,7 +9,7 @@ from tqdm import tqdm
 set_token('479feb80f2d2bd55461465e2cfac0be64eba0e98')
 
 if __name__ == '__main__':
-    pool = pd.read_excel("stock_pool.xls", sheet_name="23.2", usecols="A:F")
+    pool = pd.read_excel("stock_pool_23.2.xls", sheet_name="Sheet1", usecols="A:F")
     pool_null = pool.isnull()
     data_len = len(pool['sym_ch'])
     for i in range(1, data_len):
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     for i in tqdm(range(0, data_len)):
         sym_ch = pool['sym_ch'][i]
-        if not pool_null['sym_ch'][i]:
+        if not pool_null['sym_ch'][i] and pool_null['symbol'][i]:  # 中文标的名称存在，但不存在标的代码，才需要查询信息
             res = all_symbols[all_symbols['sec_name'].str.contains(sym_ch)]['symbol'].to_string()
             symbol = res.split(' ')[-1]
             if len(res) > 1:
@@ -48,5 +48,5 @@ if __name__ == '__main__':
                 pool.loc[i, 'm_value'] = fund
                 pool.loc[i, 'lastd_ratio'] = ratio
 
-    pool.to_csv("stock_pool_full.csv")
-    pool.to_excel("stock_pool_full.xls", sheet_name="Sheet1")
+    # pool.to_csv("stock_pool_23.2_full.csv")
+    pool.to_excel("stock_pool_23.2_full.xls", sheet_name="Sheet1")
