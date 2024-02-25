@@ -7,6 +7,20 @@ from gm.api import *
 # 设置token， 查看已有token ID,在用户-秘钥管理里获取
 set_token('479feb80f2d2bd55461465e2cfac0be64eba0e98')
 
+def get_open_ratio(symbol, current_date):
+    # 查询当天开盘高开幅度
+    # 先获取研报日期下一个交易日
+    next_date = get_next_n_trading_dates(exchange='SHSE', date=current_date, n=1)[0]
+
+    # 查询两日数据
+    history_data = history_n(symbol=symbol, frequency='1d', count=2, end_time=next_date,
+                             fields='open, close, low, high, eob', adjust=ADJUST_NONE, df=False)
+    ratio_str = ''
+    if len(history_data):
+        last_d_ratio = (history_data[1]['open'] / history_data[0]['close'] - 1) * 100
+        ratio_str = '%.1f%%' % last_d_ratio
+    return ratio_str
+
 
 # funds data transfer limit: 300/5min
 def get_ratios(sym, date):

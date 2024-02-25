@@ -9,7 +9,7 @@ from tqdm import tqdm
 set_token('479feb80f2d2bd55461465e2cfac0be64eba0e98')
 
 if __name__ == '__main__':
-    pool = pd.read_excel("stock_pool_22.11_full.xls", sheet_name="Sheet1", usecols="A:G")
+    pool = pd.read_excel("stock_pool_all.xls", sheet_name="Now", usecols="A:F")
     pool_null = pool.isnull()
     data_len = len(pool['sym_ch'])
     for i in range(1, data_len):
@@ -47,7 +47,7 @@ if __name__ == '__main__':
                 fund, ratio = get_funds(symbol, current_date)
                 pool.loc[i, 'm_value'] = fund
                 pool.loc[i, 'lastd_ratio'] = ratio
-                pool.loc[i, 'open_ratio'] = get_open_ratio(symbol, current_date)
+                # pool.loc[i, 'open_ratio'] = get_open_ratio(symbol, current_date)
 
     # pool.to_csv("stock_pool_23.2_full.csv")
-    pool.to_excel("stock_pool_22.11_full_v2.xls", sheet_name="Sheet1")
+    pool.to_excel("stock_pool_now_full.xls", sheet_name="Sheet1")
