@@ -9,7 +9,7 @@ from tqdm import tqdm
 set_token('479feb80f2d2bd55461465e2cfac0be64eba0e98')
 
 if __name__ == '__main__':
-    pool = pd.read_excel("stock_pool_24.1_full.xls", sheet_name="Sheet1", usecols="A:G")
+    pool = pd.read_excel("stock_pool_22.5_full_v2.xls", sheet_name="Sheet1", usecols="A:G")
     pool_null = pool.isnull()
     data_len = len(pool['sym_ch'])
     for i in range(1, data_len):
@@ -34,7 +34,8 @@ if __name__ == '__main__':
 
     for i in tqdm(range(0, data_len)):
         sym_ch = pool['sym_ch'][i]
-        if not pool_null['sym_ch'][i] and pool_null['symbol'][i]:  # 中文标的名称存在，但不存在标的代码，才需要查询信息
+        # 中文标的名称存在且大于2（过滤掉”无“这个字），但不存在标的代码，才需要查询信息
+        if not pool_null['sym_ch'][i] and pool_null['symbol'][i] and len(sym_ch) > 2:
             res = all_symbols[all_symbols['sec_name'].str.contains(sym_ch)]['symbol'].to_string()
             symbol = res.split(' ')[-1]
             if len(res) > 1:
@@ -50,4 +51,4 @@ if __name__ == '__main__':
                 pool.loc[i, 'open_ratio'] = get_open_ratio(symbol, current_date)
 
     # pool.to_csv("stock_pool_23.2_full.csv")
-    pool.to_excel("stock_pool_24.1_full_v2.xls", sheet_name="24.1")
+    pool.to_excel("stock_pool_22.5_full_v3.xls", sheet_name="Sheet1")
