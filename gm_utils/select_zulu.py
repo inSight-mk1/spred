@@ -31,16 +31,22 @@ def get_peg(sym, date):
 def get_relative_strength(symbol, index_history_data, n_list, date):
     if symbol[0] == '6':
         full_sym = 'SHSE.' + symbol
+    elif symbol[0] == 'S':
+        full_sym = symbol
     else:
         full_sym = 'SZSE.' + symbol
     history_n_count = max(n_list) + 1
     stock_history_data = history_n(symbol=full_sym, frequency='1d', count=history_n_count, end_time=date,
                                    fields='close', adjust=ADJUST_PREV, df=False)
     rsn = []
+    history_len = len(stock_history_data)
     for n in n_list:
-        stock_ratio = stock_history_data[-1]['close'] / stock_history_data[-1-n]['close']
-        index_ratio = index_history_data[-1]['close'] / index_history_data[-1-n]['close']
-        rs = stock_ratio / index_ratio
+        if n + 1 > history_len:
+            rs = -1
+        else:
+            stock_ratio = stock_history_data[-1]['close'] / stock_history_data[-1-n]['close']
+            index_ratio = index_history_data[-1]['close'] / index_history_data[-1-n]['close']
+            rs = stock_ratio / index_ratio
         rsn.append(rs)
     return rsn
 
